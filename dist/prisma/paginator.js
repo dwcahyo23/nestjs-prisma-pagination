@@ -11,31 +11,33 @@ const getOrderByWithTieBreaker = (args = {}, defaultOptions = {}) => {
         { [orderByTieBreakerPropertyName]: 'asc' },
     ];
 };
-const paginator = (defaultOptions) => async (model, args = { where: undefined }, options) => {
-    const page = Number(options?.page || defaultOptions?.page) || 0;
-    const perPage = Number(options?.perPage || defaultOptions?.perPage) || 10;
-    const orderBy = getOrderByWithTieBreaker(args, defaultOptions);
-    const skip = page > 0 ? perPage * (page) : 0;
-    const [total, data] = await Promise.all([
-        model.count({ where: args.where }),
-        model.findMany({
-            ...args,
-            orderBy,
-            take: perPage,
-            skip,
-        }),
-    ]);
-    const lastPage = Math.ceil(total / perPage);
-    return {
-        data,
-        meta: {
-            total: total - 1,
-            lastPage: lastPage - 1,
-            currentPage: page,
-            perPage,
-            prev: page > 0 ? page - 1 : null,
-            next: page < lastPage ? page + 1 : null,
-        },
+const paginator = (defaultOptions) => {
+    return async (model, args = { where: undefined }, options) => {
+        const page = Number(options?.page || defaultOptions?.page) || 0;
+        const perPage = Number(options?.perPage || defaultOptions?.perPage) || 10;
+        const orderBy = getOrderByWithTieBreaker(args, defaultOptions);
+        const skip = page > 0 ? perPage * (page) : 0;
+        const [total, data] = await Promise.all([
+            model.count({ where: args.where }),
+            model.findMany({
+                ...args,
+                orderBy,
+                take: perPage,
+                skip,
+            }),
+        ]);
+        const lastPage = Math.ceil(total / perPage - 1);
+        return {
+            data,
+            meta: {
+                total,
+                lastPage,
+                currentPage: page,
+                perPage,
+                prev: page > 0 ? page - 1 : null,
+                next: page < lastPage ? page + 1 : null,
+            },
+        };
     };
 };
 exports.paginator = paginator;

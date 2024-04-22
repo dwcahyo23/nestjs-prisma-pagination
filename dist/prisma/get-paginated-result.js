@@ -16,12 +16,12 @@ const getPaginatedResult = ({ data, pagination, count = data.length, }) => {
     const { page = 0, perPage = 10 } = pagination;
     const slicedData = data.slice(pagination.page === 0 ? 0 : (pagination.page) * pagination.perPage, pagination.page * pagination.perPage);
     const total = Number(count || 0);
-    const lastPage = Math.ceil(total / perPage);
+    const lastPage = Math.ceil(total / perPage - 1);
     return {
         data: slicedData,
         meta: {
-            total: total - 1,
-            lastPage: lastPage - 1,
+            total,
+            lastPage,
             currentPage: page,
             perPage,
             prev: page > 0 ? page - 1 : null,

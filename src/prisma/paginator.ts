@@ -1,3 +1,4 @@
+/* eslint-disable arrow-body-style */
 /* eslint-disable max-len */
 import {
   PaginatorTypes,
@@ -17,9 +18,9 @@ const getOrderByWithTieBreaker = (args: any = {}, defaultOptions: PaginatorTypes
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): PaginatorTypes.PaginateFunction =>
-  // eslint-disable-next-line default-param-last, implicit-arrow-linebreak
-  async (model, args: any = { where: undefined }, options) => {
+export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): PaginatorTypes.PaginateFunction => {
+  // eslint-disable-next-line default-param-last
+  return async (model, args: any = { where: undefined }, options) => {
     const page = Number(options?.page || defaultOptions?.page) || 0;
     const perPage = Number(options?.perPage || defaultOptions?.perPage) || 10;
     const orderBy = getOrderByWithTieBreaker(args, defaultOptions);
@@ -34,13 +35,13 @@ export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): Pagin
         skip,
       }),
     ]);
-    const lastPage = Math.ceil(total / perPage);
+    const lastPage = Math.ceil(total / perPage - 1);
 
     return {
       data,
       meta: {
-        total: total - 1,
-        lastPage: lastPage - 1,
+        total,
+        lastPage,
         currentPage: page,
         perPage,
         prev: page > 0 ? page - 1 : null,
@@ -48,3 +49,4 @@ export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): Pagin
       },
     };
   };
+};

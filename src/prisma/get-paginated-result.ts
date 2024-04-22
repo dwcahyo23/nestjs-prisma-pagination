@@ -6,7 +6,6 @@ import { PaginatorTypes } from '../../index';
  * @param {number | string | undefined} rawPerPage
  * @return Pagination
  */
-// eslint-disable-next-line max-len
 export const getPagination = (rawPage?: number | string, rawPerPage?: number | string): PaginatorTypes.Pagination => {
   const page: number = Number(rawPage || 0);
   const perPage: number = Number(rawPerPage || 10);
@@ -42,13 +41,13 @@ export const getPaginatedResult = <T>({
     pagination.page * pagination.perPage,
   );
   const total: number = Number(count || 0);
-  const lastPage: number = Math.ceil(total / perPage);
+  const lastPage: number = Math.ceil(total / perPage - 1);
 
   return {
     data: slicedData,
     meta: {
-      total: total - 1,
-      lastPage: lastPage - 1,
+      total,
+      lastPage,
       currentPage: page,
       perPage,
       prev: page > 0 ? page - 1 : null,

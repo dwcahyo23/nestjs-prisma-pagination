@@ -1,7 +1,6 @@
-/* eslint-disable import/prefer-default-export */
 import { PaginatorTypes } from '../../index';
 
-// eslint-disable-next-line max-len
+// eslint-disable-next-line import/prefer-default-export, max-len
 export const searchPaginator = (defaultOptions: PaginatorTypes.SearchPaginateOptions): PaginatorTypes.SearchPaginateFunction => async <T>(prisma: any, modelName: string, options: any) => {
   let data: T & { row_count: number }[];
 
@@ -30,13 +29,13 @@ export const searchPaginator = (defaultOptions: PaginatorTypes.SearchPaginateOpt
   }
 
   const total = Number(data[0]?.row_count || 0);
-  const lastPage = Math.ceil((total) / (options?.perPage || defaultOptions.perPage));
+  const lastPage = Math.ceil((total) / (options?.perPage || defaultOptions.perPage) - 1);
 
   return {
     data: data as unknown as T[],
     meta: {
-      total: total - 1,
-      lastPage: lastPage - 1,
+      total,
+      lastPage,
       currentPage: options?.page || 0,
       perPage: options?.perPage || 10,
       prev: options?.page > 0 ? (options?.page || defaultOptions.page) - 1 : null,

@@ -42,11 +42,11 @@ describe('Search Paginator', () => {
             ],
             meta: {
                 total: 2,
-                lastPage: Math.ceil(2 / 10),
-                currentPage: 1,
+                lastPage: Math.ceil(2 / 10 - 1),
+                currentPage: 0,
                 perPage: 10,
                 prev: 1 > 1 ? 1 - 1 : null,
-                next: 1 < Math.ceil(1 / 10) ? 1 + 1 : null,
+                next: 1 < Math.ceil(1 / 10 - 1) ? 1 + 1 : null,
             }
         };
         const paginatedResult = await searchPaginate(prisma, modelName, options);
@@ -82,11 +82,11 @@ describe('Search Paginator', () => {
             ],
             meta: {
                 total: 1,
-                lastPage: Math.ceil(1 / 10),
-                currentPage: 1,
+                lastPage: Math.ceil(1 / 10 - 1),
+                currentPage: 0,
                 perPage: 10,
                 prev: 1 > 1 ? 1 - 1 : null,
-                next: 1 < Math.ceil(1 / 10) ? 1 + 1 : null,
+                next: 1 < Math.ceil(1 / 10 - 1) ? 1 + 1 : null,
             }
         };
         const paginatedResult = await searchPaginate(prisma, modelName, options);
@@ -124,11 +124,11 @@ describe('Search Paginator', () => {
             ],
             meta: {
                 total: 2,
-                lastPage: Math.ceil(2 / options.perPage),
+                lastPage: Math.ceil(2 / options.perPage - 1),
                 currentPage: options.page,
                 perPage: options.perPage,
-                prev: options.page > 1 ? options.page - 1 : null,
-                next: options.page < Math.ceil(options.page / options.perPage) ? options.page + 1 : null,
+                prev: options.page > 0 ? options.page - 1 : null,
+                next: options.page < Math.ceil(options.page / options.perPage - 1) ? options.page + 1 : null,
             }
         };
         const paginatedResponse = await searchPaginate(prisma, modelName, options);
