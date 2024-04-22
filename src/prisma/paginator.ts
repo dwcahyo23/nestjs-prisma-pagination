@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {
   PaginatorTypes,
 } from '../../index';
@@ -15,14 +16,15 @@ const getOrderByWithTieBreaker = (args: any = {}, defaultOptions: PaginatorTypes
   ];
 };
 
-export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): PaginatorTypes.PaginateFunction => {
-  // eslint-disable-next-line default-param-last
-  return async (model, args: any = { where: undefined }, options) => {
-    const page = Number(options?.page || defaultOptions?.page) || 1;
+// eslint-disable-next-line import/prefer-default-export
+export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): PaginatorTypes.PaginateFunction =>
+  // eslint-disable-next-line default-param-last, implicit-arrow-linebreak
+  async (model, args: any = { where: undefined }, options) => {
+    const page = Number(options?.page || defaultOptions?.page) || 0;
     const perPage = Number(options?.perPage || defaultOptions?.perPage) || 10;
     const orderBy = getOrderByWithTieBreaker(args, defaultOptions);
 
-    const skip = page > 0 ? perPage * (page - 1) : 0;
+    const skip = page > 0 ? perPage * (page) : 0;
     const [total, data] = await Promise.all([
       model.count({ where: args.where }),
       model.findMany({
@@ -37,13 +39,12 @@ export const paginator = (defaultOptions: PaginatorTypes.PaginateOptions): Pagin
     return {
       data,
       meta: {
-        total,
-        lastPage,
+        total: total - 1,
+        lastPage: lastPage - 1,
         currentPage: page,
         perPage,
-        prev: page > 1 ? page - 1 : null,
+        prev: page > 0 ? page - 1 : null,
         next: page < lastPage ? page + 1 : null,
       },
     };
   };
-};

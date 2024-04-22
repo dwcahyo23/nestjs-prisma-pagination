@@ -6,10 +6,11 @@ import { PaginatorTypes } from '../../index';
  * @param {number | string | undefined} rawPerPage
  * @return Pagination
  */
+// eslint-disable-next-line max-len
 export const getPagination = (rawPage?: number | string, rawPerPage?: number | string): PaginatorTypes.Pagination => {
-  const page: number = Number(rawPage || 1);
+  const page: number = Number(rawPage || 0);
   const perPage: number = Number(rawPerPage || 10);
-  const skip: number = page > 0 ? perPage * (page - 1) : 0;
+  const skip: number = page > 0 ? perPage * (page) : 0;
 
   return {
     perPage,
@@ -34,10 +35,10 @@ export const getPaginatedResult = <T>({
   pagination: PaginatorTypes.Pagination,
   count?: string | number,
 }): PaginatorTypes.PaginatedResult<T> => {
-  const { page = 1, perPage = 10 } = pagination;
+  const { page = 0, perPage = 10 } = pagination;
 
   const slicedData = data.slice(
-    pagination.page === 1 ? 0 : (pagination.page - 1) * pagination.perPage,
+    pagination.page === 0 ? 0 : (pagination.page) * pagination.perPage,
     pagination.page * pagination.perPage,
   );
   const total: number = Number(count || 0);
@@ -46,11 +47,11 @@ export const getPaginatedResult = <T>({
   return {
     data: slicedData,
     meta: {
-      total,
-      lastPage,
+      total: total - 1,
+      lastPage: lastPage - 1,
       currentPage: page,
       perPage,
-      prev: page > 1 ? page - 1 : null,
+      prev: page > 0 ? page - 1 : null,
       next: page < lastPage ? page + 1 : null,
     },
   };

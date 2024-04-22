@@ -1,11 +1,12 @@
-import { PaginatorTypes } from "../../index";
+/* eslint-disable import/prefer-default-export */
+import { PaginatorTypes } from '../../index';
 
-export const searchPaginator = (defaultOptions: PaginatorTypes.SearchPaginateOptions): PaginatorTypes.SearchPaginateFunction => {
-  return async <T>(prisma: any, modelName: string, options: any) => {
-    let data: T & { row_count: number }[];
+// eslint-disable-next-line max-len
+export const searchPaginator = (defaultOptions: PaginatorTypes.SearchPaginateOptions): PaginatorTypes.SearchPaginateFunction => async <T>(prisma: any, modelName: string, options: any) => {
+  let data: T & { row_count: number }[];
 
-    if (options?.searchValue) {
-      data = await prisma.$queryRawUnsafe(`
+  if (options?.searchValue) {
+    data = await prisma.$queryRawUnsafe(`
         SELECT *,
         (SELECT COUNT(*) FROM "${modelName}"
           WHERE to_tsvector('english',
@@ -18,29 +19,28 @@ export const searchPaginator = (defaultOptions: PaginatorTypes.SearchPaginateOpt
           limit ${options.perPage}
           offset ${options.skip};
       `);
-    } else {
-      data = await prisma.$queryRawUnsafe(`
+  } else {
+    data = await prisma.$queryRawUnsafe(`
          SELECT *,
         (SELECT COUNT(*) FROM "${modelName}") as row_count
         FROM "${modelName}"
         limit ${options.perPage}
         offset ${options.skip};
         `);
-    }
+  }
 
-    const total = Number(data[0]?.row_count || 0);
-    const lastPage = Math.ceil((total) / (options?.perPage || defaultOptions.perPage));
+  const total = Number(data[0]?.row_count || 0);
+  const lastPage = Math.ceil((total) / (options?.perPage || defaultOptions.perPage));
 
-    return {
-      data: data as unknown as T[],
-      meta: {
-        total,
-        lastPage,
-        currentPage: options?.page || 1,
-        perPage: options?.perPage || 10,
-        prev: options?.page > 1 ? (options?.page || defaultOptions.page) - 1 : null,
-        next: options?.page < lastPage ? (options?.page || defaultOptions.page) + 1 : null,
-      },
-    };
+  return {
+    data: data as unknown as T[],
+    meta: {
+      total: total - 1,
+      lastPage: lastPage - 1,
+      currentPage: options?.page || 0,
+      perPage: options?.perPage || 10,
+      prev: options?.page > 0 ? (options?.page || defaultOptions.page) - 1 : null,
+      next: options?.page < lastPage ? (options?.page || defaultOptions.page) + 1 : null,
+    },
   };
 };
